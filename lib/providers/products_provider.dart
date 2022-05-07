@@ -3,14 +3,17 @@ import 'package:flutter_shop_app/dummy/products.dart';
 import 'package:flutter_shop_app/models/product.dart';
 
 class ProductsProvider with ChangeNotifier {
-  List<Product> _products = loadedProducts;
+  final List<Product> _products = loadedProducts;
 
   List<Product> get products {
     return [..._products];
   }
 
-  void add() {
-    //Product product) {
+  Product findProduct(String id) {
+    return _products.firstWhere((product) => product.id == id);
+  }
+
+  void add(Product product) {
     // _products.add(product);
     notifyListeners();
   }
