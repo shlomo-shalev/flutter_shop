@@ -1,4 +1,4 @@
-import 'package:flutter_shop_app/models/product.dart';
+import 'package:flutter_shop_app/providers/product.dart';
 
 final loadedProducts = [
   Product(
