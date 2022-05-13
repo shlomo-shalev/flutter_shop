@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // models
-import 'package:flutter_shop_app/providers/product.dart';
+import 'package:flutter_shop_app/providers/product_provider.dart';
 // screens widgets
 import 'package:flutter_shop_app/screens/product_overview_screen.dart';
 
@@ -14,7 +14,8 @@ class ProductBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Product product = Provider.of<Product>(context, listen: false);
+    final ProductProvider product =
+        Provider.of<ProductProvider>(context, listen: false);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
@@ -34,7 +35,7 @@ class ProductBlock extends StatelessWidget {
         ),
         footer: GridTileBar(
           backgroundColor: Colors.black87,
-          leading: Consumer<Product>(
+          leading: Consumer<ProductProvider>(
             builder: (context, product, _) => IconButton(
               color: Theme.of(context).colorScheme.secondary,
               icon: Icon(

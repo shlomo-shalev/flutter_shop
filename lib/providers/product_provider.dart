@@ -1,7 +1,7 @@
 // packages
 import 'package:flutter/widgets.dart';
 
-class Product with ChangeNotifier {
+class ProductProvider with ChangeNotifier {
   final String id;
   final String title;
   final String description;
@@ -9,7 +9,7 @@ class Product with ChangeNotifier {
   final String imageUrl;
   bool isFavorite;
 
-  Product({
+  ProductProvider({
     required this.id,
     required this.title,
     required this.description,

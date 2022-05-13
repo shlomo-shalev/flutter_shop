@@ -1,19 +1,27 @@
+// packages
 import 'package:flutter/material.dart';
+
+// dummies
 import 'package:flutter_shop_app/dummy/products.dart';
-import 'package:flutter_shop_app/providers/product.dart';
+// providers
+import 'package:flutter_shop_app/providers/product_provider.dart';
 
 class ProductsProvider with ChangeNotifier {
-  final List<Product> _products = loadedProducts;
+  final List<ProductProvider> _products = loadedProducts;
 
-  List<Product> get products {
+  List<ProductProvider> get products {
     return [..._products];
   }
 
-  Product findProduct(String id) {
+  List<ProductProvider> get favoriteProducts {
+    return _products.where((product) => product.isFavorite).toList();
+  }
+
+  ProductProvider findProduct(String id) {
     return _products.firstWhere((product) => product.id == id);
   }
 
-  void add(Product product) {
+  void add(ProductProvider product) {
     // _products.add(product);
     notifyListeners();
   }
