@@ -18,18 +18,34 @@ class CartItem {
 }
 
 class CartProvider with ChangeNotifier {
-  Map<String, CartItem> items = {};
+  final Map<String, CartItem> _items = {};
+
+  Map<String, CartItem> get items {
+    return {..._items};
+  }
+
+  int get count {
+    return _items.length;
+  }
+
+  double get total {
+    double total = 0.0;
+    _items.forEach((key, CartItem cartItem) =>
+        total += cartItem.price * cartItem.quantity);
+    return total;
+  }
 
   void toggleItem(ProductProvider product) {
-    if (items.containsKey(product.id)) {
+    if (_items.containsKey(product.id)) {
       _updateQuantityItem(product);
     } else {
       _addItem(product);
     }
+    notifyListeners();
   }
 
   void _updateQuantityItem(ProductProvider product) {
-    items.update(
+    _items.update(
         product.id,
         (CartItem cartItem) => CartItem(
               id: cartItem.id,
@@ -40,13 +56,13 @@ class CartProvider with ChangeNotifier {
   }
 
   void _addItem(ProductProvider product) {
-    items[product.id] = CartItem(
+    _items[product.id] = CartItem(
       id: DateTime.now().toString(),
       item: product,
       quantity: 1,
       price: product.price,
     );
-    // items.putIfAbsent(
+    // _items.putIfAbsent(
     //   product.id,
     //   () => CartItem(
     //     id: DateTime.now().toString(),
@@ -55,5 +71,11 @@ class CartProvider with ChangeNotifier {
     //     price: product.price,
     //   ),
     // );
+  }
+
+  void remove(CartItem cartItem) {
+    _items.removeWhere(
+        (key, CartItem localCartItem) => cartItem.id == localCartItem.id);
+    notifyListeners();
   }
 }
