@@ -52,7 +52,24 @@ class ProductBlock extends StatelessWidget {
           trailing: IconButton(
             color: Theme.of(context).colorScheme.secondary,
             icon: const Icon(Icons.shopping_cart),
-            onPressed: () => cart.toggleItem(product),
+            onPressed: () {
+              cart.addItemOrUpdateQuantity(product);
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text(
+                    'Added item to cart!!!',
+                  ),
+                  duration: const Duration(seconds: 2),
+                  action: SnackBarAction(
+                    label: 'UNDO',
+                    onPressed: () {
+                      cart.removeItemOrSubtractQuantity(product);
+                    },
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ),

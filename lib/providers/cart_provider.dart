@@ -35,22 +35,44 @@ class CartProvider with ChangeNotifier {
     return total;
   }
 
-  void toggleItem(ProductProvider product) {
+  void addItemOrUpdateQuantity(ProductProvider product) {
     if (_items.containsKey(product.id)) {
-      _updateQuantityItem(product);
+      _updateQuantity(product);
     } else {
       _addItem(product);
     }
     notifyListeners();
   }
 
-  void _updateQuantityItem(ProductProvider product) {
+  void removeItemOrSubtractQuantity(ProductProvider product) {
+    if (_items.containsKey(product.id)) {
+      if ((_items[product.id] as CartItem).quantity > 1) {
+        _subtractQuantity(product);
+      } else {
+        _items.remove(product.id);
+      }
+      notifyListeners();
+    }
+  }
+
+  void _updateQuantity(ProductProvider product) {
     _items.update(
         product.id,
         (CartItem cartItem) => CartItem(
               id: cartItem.id,
               item: cartItem.item,
               quantity: cartItem.quantity + 1,
+              price: cartItem.price,
+            ));
+  }
+
+  void _subtractQuantity(ProductProvider product) {
+    _items.update(
+        product.id,
+        (CartItem cartItem) => CartItem(
+              id: cartItem.id,
+              item: cartItem.item,
+              quantity: cartItem.quantity - 1,
               price: cartItem.price,
             ));
   }
