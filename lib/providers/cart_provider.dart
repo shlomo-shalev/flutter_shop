@@ -78,4 +78,9 @@ class CartProvider with ChangeNotifier {
         (key, CartItem localCartItem) => cartItem.id == localCartItem.id);
     notifyListeners();
   }
+
+  void clear() {
+    _items.clear();
+    notifyListeners();
+  }
 }

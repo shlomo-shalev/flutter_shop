@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_shop_app/providers/cart_provider.dart';
+import 'package:flutter_shop_app/providers/orders_provider.dart';
 import 'package:flutter_shop_app/widgets/cart_item_block.dart';
 import 'package:provider/provider.dart';
 
-class CartOverviewScreen extends StatelessWidget {
+class CartScreen extends StatelessWidget {
   static const routeName = '/cart';
 
-  const CartOverviewScreen({Key? key}) : super(key: key);
+  const CartScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,12 +33,19 @@ class CartOverviewScreen extends StatelessWidget {
                   Chip(
                     backgroundColor: Theme.of(context).primaryColor,
                     label: Text(
-                      '\$${cart.total}',
+                      '\$${cart.total.toStringAsFixed(2)}',
                       style: Theme.of(context).primaryTextTheme.titleSmall,
                     ),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Provider.of<OrdersProvider>(context, listen: false)
+                          .addOrder(
+                        cart.items.values.toList(),
+                        cart.total,
+                      );
+                      cart.clear();
+                    },
                     child: const Text('ORDER NOW'),
                   ),
                 ],

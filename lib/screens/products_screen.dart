@@ -4,29 +4,31 @@ import 'package:provider/provider.dart';
 // widgets
 import 'package:flutter_shop_app/widgets/badge.dart';
 import 'package:flutter_shop_app/widgets/products_block.dart';
+import 'package:flutter_shop_app/widgets/app_drawer.dart';
 // providers
 import 'package:flutter_shop_app/providers/cart_provider.dart';
 // screens
-import 'package:flutter_shop_app/screens/cart_overview_screen.dart';
+import 'package:flutter_shop_app/screens/cart_screen.dart';
 
 enum _FiltersOptions {
   favorites,
   all,
 }
 
-class ProductsOverviewScreen extends StatefulWidget {
-  const ProductsOverviewScreen({Key? key}) : super(key: key);
+class ProductsScreen extends StatefulWidget {
+  const ProductsScreen({Key? key}) : super(key: key);
 
   @override
-  State<ProductsOverviewScreen> createState() => _ProductsOverviewScreenState();
+  State<ProductsScreen> createState() => _ProductsScreenState();
 }
 
-class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
+class _ProductsScreenState extends State<ProductsScreen> {
   bool _onlyFavorites = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const AppDrawer(),
       appBar: AppBar(
         title: const Text('myShop'),
         actions: <Widget>[
@@ -56,7 +58,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             ),
             child: IconButton(
               onPressed: () =>
-                  Navigator.of(context).pushNamed(CartOverviewScreen.routeName),
+                  Navigator.of(context).pushNamed(CartScreen.routeName),
               icon: const Icon(
                 Icons.shopping_cart,
               ),

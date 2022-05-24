@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_shop_app/providers/product_provider.dart';
 import 'package:flutter_shop_app/providers/cart_provider.dart';
 // screens widgets
-import 'package:flutter_shop_app/screens/product_overview_screen.dart';
+import 'package:flutter_shop_app/screens/product_screen.dart';
 
 class ProductBlock extends StatelessWidget {
   const ProductBlock({
@@ -24,7 +24,7 @@ class ProductBlock extends StatelessWidget {
         child: GestureDetector(
           onTap: () {
             Navigator.of(context).pushNamed(
-              ProductOverviewScreen.routeName,
+              ProductScreen.routeName,
               arguments: {
                 'product': product,
               },
