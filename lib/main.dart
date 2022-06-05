@@ -1,12 +1,14 @@
 // pachages
 import 'package:flutter/material.dart';
+import 'package:flutter_shop_app/screens/edit_product_screen.dart';
 import 'package:provider/provider.dart';
 
 // screens widgets
-import 'package:flutter_shop_app/screens/products_screen.dart';
-import 'package:flutter_shop_app/screens/product_screen.dart';
 import 'package:flutter_shop_app/screens/cart_screen.dart';
 import 'package:flutter_shop_app/screens/orders_screen.dart';
+import 'package:flutter_shop_app/screens/product_screen.dart';
+import 'package:flutter_shop_app/screens/products_screen.dart';
+import 'package:flutter_shop_app/screens/user_products_screen.dart';
 // providers
 import 'package:flutter_shop_app/providers/products_provider.dart';
 import 'package:flutter_shop_app/providers/cart_provider.dart';
@@ -51,6 +53,8 @@ class MyApp extends StatelessWidget {
           ProductScreen.routeName: (_) => const ProductScreen(),
           CartScreen.routeName: (_) => const CartScreen(),
           OrdersScreen.routeName: (_) => const OrdersScreen(),
+          UserProductsScreen.routeName: (_) => const UserProductsScreen(),
+          EditProductScreen.routeName: (_) => const EditProductScreen(),
         },
       ),
     );
