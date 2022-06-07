@@ -1,6 +1,5 @@
 // packages
 import 'package:flutter/material.dart';
-
 // dummies
 import 'package:flutter_shop_app/dummy/products.dart';
 // providers
@@ -22,7 +21,16 @@ class ProductsProvider with ChangeNotifier {
   }
 
   void add(ProductProvider product) {
-    // _products.add(product);
+    _products.insert(
+      0,
+      ProductProvider(
+        id: DateTime.now().toString(),
+        title: product.title,
+        description: product.description,
+        imageUrl: product.imageUrl,
+        price: product.price,
+      ),
+    );
     notifyListeners();
   }
 }

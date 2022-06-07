@@ -33,15 +33,18 @@ class UserProductsScreen extends StatelessWidget {
         ],
       ),
       drawer: const AppDrawer(),
-      body: ListView.builder(
-        itemCount: products.length,
-        itemBuilder: (_, i) => Column(
-          children: [
-            UserProductBlock(
-              product: products[i],
-            ),
-            const Divider(),
-          ],
+      body: Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: ListView.builder(
+          itemCount: products.length,
+          itemBuilder: (_, i) => Column(
+            children: [
+              UserProductBlock(
+                product: products[i],
+              ),
+              const Divider(),
+            ],
+          ),
         ),
       ),
     );

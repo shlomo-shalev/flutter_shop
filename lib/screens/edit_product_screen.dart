@@ -1,8 +1,9 @@
 // packeges
-import 'dart:developer';
 import 'package:flutter/material.dart';
 // providers
 import 'package:flutter_shop_app/providers/product_provider.dart';
+import 'package:flutter_shop_app/providers/products_provider.dart';
+import 'package:provider/provider.dart';
 
 class EditProductScreen extends StatefulWidget {
   static const String routeName = '/edit-product';
@@ -58,7 +59,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
     });
     if (!_form.currentState!.validate()) return;
     _form.currentState!.save();
-    inspect(_product);
+    Provider.of<ProductsProvider>(context, listen: false).add(_product);
+    Navigator.of(context).pop();
   }
 
   void _addFeild(name, value) {
@@ -217,8 +219,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           return 'Image URL is not valid';
                         }
                         if (!value.endsWith('.png') &&
-                            !value.startsWith('.jpg') &&
-                            !value.startsWith('.jpeg')) {
+                            !value.endsWith('.jpg') &&
+                            !value.endsWith('.jpeg')) {
                           return 'Image URL is not valid';
                         }
                         return null;
