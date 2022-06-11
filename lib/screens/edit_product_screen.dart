@@ -28,11 +28,26 @@ class _EditProductScreenState extends State<EditProductScreen> {
     imageUrl: '',
   );
   bool autoAlways = false;
+  bool isCheck = true;
 
   @override
   void initState() {
     _imageUrlFocusNode.addListener(_chnageFocusForImageUrl);
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (isCheck) {
+      isCheck = true;
+      final ProductProvider? product =
+          ModalRoute.of(context)!.settings.arguments as ProductProvider?;
+      if (product != null) {
+        _product = product;
+        _imageUrlController.text = product.imageUrl;
+      }
+    }
+    super.didChangeDependencies();
   }
 
   @override
@@ -59,7 +74,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
     });
     if (!_form.currentState!.validate()) return;
     _form.currentState!.save();
-    Provider.of<ProductsProvider>(context, listen: false).add(_product);
+    if (_product.id == '') {
+      Provider.of<ProductsProvider>(context, listen: false).add(_product);
+    } else {
+      Provider.of<ProductsProvider>(context, listen: false)
+          .update(_product.id, _product);
+    }
     Navigator.of(context).pop();
   }
 
@@ -68,18 +88,21 @@ class _EditProductScreenState extends State<EditProductScreen> {
       return isReplace ? newValue : oldValue;
     }
 
-    var id = _replaceData(name == 'id', value, _product.id);
-    var title = _replaceData(name == 'title', value, _product.title);
-    var description =
+    final id = _replaceData(name == 'id', value, _product.id);
+    final title = _replaceData(name == 'title', value, _product.title);
+    final description =
         _replaceData(name == 'description', value, _product.description);
-    var price = _replaceData(name == 'price', value, _product.price);
-    var imageUrl = _replaceData(name == 'imageUrl', value, _product.imageUrl);
+    final price = _replaceData(name == 'price', value, _product.price);
+    final imageUrl = _replaceData(name == 'imageUrl', value, _product.imageUrl);
+    final isFavorite =
+        _replaceData(name == 'isFavorite', value, _product.isFavorite);
     _product = ProductProvider(
       id: id,
       title: title,
       description: description,
       price: price,
       imageUrl: imageUrl,
+      isFavorite: isFavorite,
     );
   }
 
@@ -87,7 +110,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit product'),
+        title: Text(_product.id == '' ? 'Add product' : 'Edit product'),
         actions: <Widget>[
           IconButton(
             onPressed: _saveForm,
@@ -103,6 +126,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           child: ListView(
             children: <Widget>[
               TextFormField(
+                initialValue: _product.title,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Title',
@@ -124,6 +148,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 height: 10,
               ),
               TextFormField(
+                initialValue: _product.price.toString(),
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Amount',
@@ -153,6 +178,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 height: 10,
               ),
               TextFormField(
+                initialValue: _product.description,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Description',

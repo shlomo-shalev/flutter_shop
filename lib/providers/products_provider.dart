@@ -33,4 +33,16 @@ class ProductsProvider with ChangeNotifier {
     );
     notifyListeners();
   }
+
+  void update(String id, ProductProvider product) {
+    final productIndex =
+        _products.indexWhere((loopProduct) => loopProduct.id == product.id);
+    _products[productIndex] = product;
+    notifyListeners();
+  }
+
+  void delete(String id) {
+    _products.removeWhere((product) => product.id == id);
+    notifyListeners();
+  }
 }
