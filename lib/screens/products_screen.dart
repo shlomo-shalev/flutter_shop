@@ -1,5 +1,6 @@
 // packages
 import 'package:flutter/material.dart';
+import 'package:flutter_shop_app/providers/products_provider.dart';
 import 'package:provider/provider.dart';
 // widgets
 import 'package:flutter_shop_app/widgets/badge.dart';
@@ -24,6 +25,23 @@ class ProductsScreen extends StatefulWidget {
 
 class _ProductsScreenState extends State<ProductsScreen> {
   bool _onlyFavorites = false;
+  bool _isInit = true;
+  bool _isloeader = true;
+
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      Provider.of<ProductsProvider>(context, listen: false)
+          .fetchAndSetProducts()
+          .then((_) {
+        setState(() {
+          _isloeader = false;
+        });
+      });
+    }
+    _isInit = false;
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +84,21 @@ class _ProductsScreenState extends State<ProductsScreen> {
           ),
         ],
       ),
-      body: ProductsBlock(_onlyFavorites),
+      body: _isloeader
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: const <Widget>[
+                  CircularProgressIndicator(),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text('Importing products...'),
+                ],
+              ),
+            )
+          : ProductsBlock(_onlyFavorites),
     );
   }
 }

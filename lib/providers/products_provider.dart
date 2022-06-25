@@ -1,12 +1,14 @@
 // packages
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 // dummies
-import 'package:flutter_shop_app/dummy/products.dart';
+// import 'package:flutter_shop_app/dummy/products.dart';
 // providers
 import 'package:flutter_shop_app/providers/product_provider.dart';
 
 class ProductsProvider with ChangeNotifier {
-  final List<ProductProvider> _products = loadedProducts;
+  List<ProductProvider> _products = []; //loadedProducts;
 
   List<ProductProvider> get products {
     return [..._products];
@@ -20,11 +22,44 @@ class ProductsProvider with ChangeNotifier {
     return _products.firstWhere((product) => product.id == id);
   }
 
-  void add(ProductProvider product) {
+  Future<void> fetchAndSetProducts() async {
+    final Uri url = Uri.parse(
+        'https://flutter-shop-50c56-default-rtdb.firebaseio.com/products.json');
+    final http.Response response = await http.get(url);
+    final Map<String, dynamic> products = json.decode(response.body) ?? {};
+    final List<ProductProvider> newProducts = [];
+    products.forEach((productId, productData) {
+      newProducts.add(ProductProvider(
+        id: productId,
+        title: productData['title'],
+        description: productData['description'],
+        imageUrl: productData['imageUrl'],
+        price: productData['price'],
+        isFavorite: productData['isFavorite'],
+      ));
+    });
+    _products = newProducts;
+    notifyListeners();
+  }
+
+  Future<void> add(ProductProvider product) async {
+    final Uri url = Uri.parse(
+        'https://flutter-shop-50c56-default-rtdb.firebaseio.com/products.json');
+    final http.Response response = await http.post(
+      url,
+      body: json.encode({
+        'title': product.title,
+        'description': product.description,
+        'imageUrl': product.imageUrl,
+        'price': product.price,
+        'isFavorite': product.isFavorite,
+      }),
+    );
+    final data = json.decode(response.body);
     _products.insert(
       0,
       ProductProvider(
-        id: DateTime.now().toString(),
+        id: data['name'],
         title: product.title,
         description: product.description,
         imageUrl: product.imageUrl,

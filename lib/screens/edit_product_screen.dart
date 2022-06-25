@@ -29,6 +29,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   );
   bool autoAlways = false;
   bool isCheck = true;
+  bool _isLoeader = false;
 
   @override
   void initState() {
@@ -68,19 +69,45 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
-  void _saveForm() {
+  void _saveForm() async {
     setState(() {
       autoAlways = true;
     });
     if (!_form.currentState!.validate()) return;
     _form.currentState!.save();
+    setState(() {
+      _isLoeader = true;
+    });
     if (_product.id == '') {
-      Provider.of<ProductsProvider>(context, listen: false).add(_product);
+      try {
+        await Provider.of<ProductsProvider>(context, listen: false)
+            .add(_product);
+        Navigator.of(context).pop();
+      } on Exception {
+        await showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('An error occurred!'),
+            content: const Text('Something went wrong.'),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: const Text('Okay'))
+            ],
+          ),
+        );
+      }
+      setState(() {
+        _isLoeader = false;
+      });
     } else {
       Provider.of<ProductsProvider>(context, listen: false)
           .update(_product.id, _product);
+      setState(() {
+        _isLoeader = false;
+      });
+      Navigator.of(context).pop();
     }
-    Navigator.of(context).pop();
   }
 
   void _addFeild(name, value) {
@@ -118,147 +145,161 @@ class _EditProductScreenState extends State<EditProductScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          autovalidateMode: autoAlways ? AutovalidateMode.always : null,
-          key: _form,
-          child: ListView(
-            children: <Widget>[
-              TextFormField(
-                initialValue: _product.title,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Title',
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Title is must!';
-                  }
-                  return null;
-                },
-                textInputAction: TextInputAction.next,
-                autofocus: true,
-                onFieldSubmitted: (_) {
-                  FocusScope.of(context).requestFocus(_priceFocusNode);
-                },
-                onSaved: (value) => _addFeild('title', value),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              TextFormField(
-                initialValue: _product.price.toString(),
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Amount',
-                ),
-                textInputAction: TextInputAction.next,
-                keyboardType: TextInputType.number,
-                focusNode: _priceFocusNode,
-                onFieldSubmitted: (_) {
-                  FocusScope.of(context).requestFocus(_descriptionFocusNode);
-                },
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Amount is must!';
-                  }
-                  if (double.tryParse(value) == null) {
-                    return 'Amount is not Valid!';
-                  }
-                  if (double.parse(value) <= 0) {
-                    return 'Amount does not bigger 0.';
-                  }
-                  return null;
-                },
-                onSaved: (value) =>
-                    _addFeild('price', double.parse(value as String)),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              TextFormField(
-                initialValue: _product.description,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Description',
-                ),
-                maxLines: 3,
-                textInputAction: TextInputAction.newline,
-                keyboardType: TextInputType.multiline,
-                focusNode: _descriptionFocusNode,
-                onSaved: (value) => _addFeild('description', value),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Description is must!';
-                  }
-                  if (value.length < 10) {
-                    return 'Description is smaller 10';
-                  }
-                  return null;
-                },
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        width: 1,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    child: _imageUrlController.text.isEmpty
-                        ? const Text('Ender a image Url')
-                        : Image.network(
-                            _imageUrlController.text,
-                            fit: BoxFit.cover,
-                          ),
-                    margin: const EdgeInsets.only(
-                      top: 8,
-                      right: 10,
-                    ),
+      body: _isLoeader
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const <Widget>[
+                  CircularProgressIndicator(),
+                  SizedBox(
+                    height: 10,
                   ),
-                  Expanded(
-                    child: TextFormField(
+                  Text('creating product...'),
+                ],
+              ),
+            )
+          : Padding(
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                autovalidateMode: autoAlways ? AutovalidateMode.always : null,
+                key: _form,
+                child: ListView(
+                  children: <Widget>[
+                    TextFormField(
+                      initialValue: _product.title,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'Image URL',
+                        labelText: 'Title',
                       ),
-                      textInputAction: TextInputAction.done,
-                      keyboardType: TextInputType.url,
-                      focusNode: _imageUrlFocusNode,
-                      controller: _imageUrlController,
-                      onSaved: (value) => _addFeild('imageUrl', value),
-                      onFieldSubmitted: (_) => _saveForm(),
-                      // onEditingComplete: () {
-                      //   _imageUrlFocusNode.unfocus();
-                      // },
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'Image URL is must!';
+                          return 'Title is must!';
                         }
-                        if (!value.startsWith('http') ||
-                            !value.startsWith('https')) {
-                          return 'Image URL is not valid';
+                        return null;
+                      },
+                      textInputAction: TextInputAction.next,
+                      autofocus: true,
+                      onFieldSubmitted: (_) {
+                        FocusScope.of(context).requestFocus(_priceFocusNode);
+                      },
+                      onSaved: (value) => _addFeild('title', value),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    TextFormField(
+                      initialValue: _product.price.toString(),
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Amount',
+                      ),
+                      textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.number,
+                      focusNode: _priceFocusNode,
+                      onFieldSubmitted: (_) {
+                        FocusScope.of(context)
+                            .requestFocus(_descriptionFocusNode);
+                      },
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Amount is must!';
                         }
-                        if (!value.endsWith('.png') &&
-                            !value.endsWith('.jpg') &&
-                            !value.endsWith('.jpeg')) {
-                          return 'Image URL is not valid';
+                        if (double.tryParse(value) == null) {
+                          return 'Amount is not Valid!';
+                        }
+                        if (double.parse(value) <= 0) {
+                          return 'Amount does not bigger 0.';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) =>
+                          _addFeild('price', double.parse(value as String)),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    TextFormField(
+                      initialValue: _product.description,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Description',
+                      ),
+                      maxLines: 3,
+                      textInputAction: TextInputAction.newline,
+                      keyboardType: TextInputType.multiline,
+                      focusNode: _descriptionFocusNode,
+                      onSaved: (value) => _addFeild('description', value),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Description is must!';
+                        }
+                        if (value.length < 10) {
+                          return 'Description is smaller 10';
                         }
                         return null;
                       },
                     ),
-                  ),
-                ],
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 1,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          child: _imageUrlController.text.isEmpty
+                              ? const Text('Ender a image Url')
+                              : Image.network(
+                                  _imageUrlController.text,
+                                  fit: BoxFit.cover,
+                                ),
+                          margin: const EdgeInsets.only(
+                            top: 8,
+                            right: 10,
+                          ),
+                        ),
+                        Expanded(
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Image URL',
+                            ),
+                            textInputAction: TextInputAction.done,
+                            keyboardType: TextInputType.url,
+                            focusNode: _imageUrlFocusNode,
+                            controller: _imageUrlController,
+                            onSaved: (value) => _addFeild('imageUrl', value),
+                            onFieldSubmitted: (_) => _saveForm(),
+                            // onEditingComplete: () {
+                            //   _imageUrlFocusNode.unfocus();
+                            // },
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Image URL is must!';
+                              }
+                              if (!value.startsWith('http') ||
+                                  !value.startsWith('https')) {
+                                return 'Image URL is not valid';
+                              }
+                              if (!value.endsWith('.png') &&
+                                  !value.endsWith('.jpg') &&
+                                  !value.endsWith('.jpeg')) {
+                                return 'Image URL is not valid';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }
