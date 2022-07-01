@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 // providers
 import 'package:flutter_shop_app/providers/product_provider.dart';
 // exceptions
-import 'package:flutter_shop_app/exceptions/HttpException.dart';
+import 'package:flutter_shop_app/exceptions/http_exception.dart';
 
 class ProductsProvider with ChangeNotifier {
   List<ProductProvider> _products = []; //loadedProducts;
