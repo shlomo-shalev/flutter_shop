@@ -17,6 +17,8 @@ class UserProductBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ScaffoldMessengerState scaffoldMessenger =
+        ScaffoldMessenger.of(context);
     return ListTile(
       title: Text(product.title),
       subtitle: Text(product.description),
@@ -36,9 +38,20 @@ class UserProductBlock extends StatelessWidget {
               icon: const Icon(Icons.edit),
             ),
             IconButton(
-              onPressed: () {
-                Provider.of<ProductsProvider>(context, listen: false)
-                    .delete(product.id);
+              onPressed: () async {
+                try {
+                  await Provider.of<ProductsProvider>(context, listen: false)
+                      .delete(product.id);
+                } catch (error) {
+                  scaffoldMessenger.showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        error.toString(),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  );
+                }
               },
               icon: const Icon(Icons.delete),
               color: Theme.of(context).errorColor,

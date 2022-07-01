@@ -101,7 +101,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
         _isLoeader = false;
       });
     } else {
-      Provider.of<ProductsProvider>(context, listen: false)
+      await Provider.of<ProductsProvider>(context, listen: false)
           .update(_product.id, _product);
       setState(() {
         _isLoeader = false;
