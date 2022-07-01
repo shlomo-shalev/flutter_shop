@@ -92,12 +92,43 @@ class ProductsProvider with ChangeNotifier {
   Future<void> delete(String id) async {
     final productIndex = _products.indexWhere((product) => product.id == id);
     ProductProvider? product = _products[productIndex];
-    _products.removeWhere((product) => product.id == id);
+    _products.removeAt(productIndex);
     notifyListeners();
     try {
       final Uri url = Uri.parse(
           'https://flutter-shop-50c56-default-rtdb.firebaseio.com/products/$id.json');
       final response = await http.delete(url);
+      if (response.statusCode >= 400) {
+        throw HttpException('Could not delete product.');
+      }
+    } catch (error) {
+      _products.insert(productIndex, product);
+      notifyListeners();
+      product = null;
+      throw HttpException(error.toString());
+    }
+    product = null;
+  }
+
+  Future<void> toogleIsFavorite(String id) async {
+    final productIndex = _products.indexWhere((product) => product.id == id);
+    ProductProvider? product = _products[productIndex];
+    final ProductProvider newProduct = ProductProvider(
+      id: product.id,
+      title: product.title,
+      description: product.description,
+      price: product.price,
+      imageUrl: product.imageUrl,
+      isFavorite: !product.isFavorite,
+    );
+    _products.insert(productIndex, newProduct);
+    notifyListeners();
+    try {
+      final Uri url = Uri.parse(
+          'https://flutter-shop-50c56-default-rtdb.firebaseio.com/products/$id.json');
+      final response = await http.put(url, body: {
+        'isFavorite': newProduct.isFavorite,
+      });
       if (response.statusCode >= 400) {
         throw HttpException('Could not delete product.');
       }

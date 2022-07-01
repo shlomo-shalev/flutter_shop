@@ -18,6 +18,8 @@ class ProductBlock extends StatelessWidget {
     final ProductProvider product =
         Provider.of<ProductProvider>(context, listen: false);
     final CartProvider cart = Provider.of<CartProvider>(context, listen: false);
+    final ScaffoldMessengerState scaffoldMessenger =
+        ScaffoldMessenger.of(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
@@ -42,7 +44,20 @@ class ProductBlock extends StatelessWidget {
               color: Theme.of(context).colorScheme.secondary,
               icon: Icon(
                   product.isFavorite ? Icons.favorite : Icons.favorite_border),
-              onPressed: () => product.toogleFavoriteStatus(),
+              onPressed: () async {
+                try {
+                  await product.toogleFavoriteStatus();
+                } catch (error) {
+                  scaffoldMessenger.showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        error.toString(),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  );
+                }
+              },
             ),
           ),
           title: Text(
