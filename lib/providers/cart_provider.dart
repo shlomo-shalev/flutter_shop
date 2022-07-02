@@ -15,6 +15,15 @@ class CartItem {
     required this.quantity,
     required this.price,
   });
+
+  Map toMap() {
+    return {
+      'id': id,
+      'item': item.toMap(),
+      'quantity': quantity,
+      'price': price,
+    };
+  }
 }
 
 class CartProvider with ChangeNotifier {

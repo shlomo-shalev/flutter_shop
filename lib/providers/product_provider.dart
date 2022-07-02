@@ -22,6 +22,16 @@ class ProductProvider with ChangeNotifier {
     this.isFavorite = false,
   });
 
+  Map toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'price': price,
+      'imageUrl': imageUrl,
+    };
+  }
+
   Future<void> toogleFavoriteStatus() async {
     isFavorite = !isFavorite;
     notifyListeners();
