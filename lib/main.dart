@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => AuthProvider(),
+          create: (_) => AuthProvider(context),
         ),
         ChangeNotifierProxyProvider<AuthProvider, ProductsProvider>(
           create: (_) => ProductsProvider(),
@@ -38,8 +38,8 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProxyProvider<AuthProvider, OrdersProvider>(
           create: (_) => OrdersProvider(),
-          update: (_, auth, currentOrders) =>
-              (currentOrders as OrdersProvider)..updateAuthToken(auth.token),
+          update: (_, auth, currentOrders) => (currentOrders as OrdersProvider)
+            ..updateAuthToken(auth.token, auth.userId),
         ),
         ChangeNotifierProvider(
           create: (_) => CartProvider(),
@@ -59,8 +59,19 @@ class MyApp extends StatelessWidget {
             ),
             fontFamily: 'Lato',
           ),
-          home: auth.isAuth ? const ProductsScreen() : const AuthScreen(),
+          home: auth.isAuth
+              ? const ProductsScreen()
+              : FutureBuilder(
+                  builder: (context, snapshot) =>
+                      snapshot.connectionState == ConnectionState.waiting
+                          ? const Scaffold(
+                              body: Text('Loader...'),
+                            )
+                          : const AuthScreen(),
+                  future: auth.tryToLogin(),
+                ),
           routes: {
+            AuthScreen.routeName: (_) => const AuthScreen(),
             ProductsScreen.routeName: (_) => const ProductsScreen(),
             ProductScreen.routeName: (_) => const ProductScreen(),
             CartScreen.routeName: (_) => const CartScreen(),

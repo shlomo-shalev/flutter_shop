@@ -24,19 +24,21 @@ class Order {
 class OrdersProvider with ChangeNotifier {
   Map<String, Order> _orders = {};
   String? authToken;
+  String? userId;
 
   Map<String, Order> get items {
     return {..._orders};
   }
 
-  void updateAuthToken(String? token) {
+  void updateAuthToken(String? token, String? idOfUser) {
     authToken = token;
+    userId = idOfUser;
   }
 
   Future<String> addOrder(List<CartItem> items, double total) async {
     final DateTime now = DateTime.now();
     final Uri url = Uri.parse(
-        'https://flutter-shop-50c56-default-rtdb.firebaseio.com/orders.json?auth=$authToken');
+        'https://flutter-shop-50c56-default-rtdb.firebaseio.com/orders/$userId.json?auth=$authToken');
     final http.Response response = await http.post(
       url,
       body: json.encode({
@@ -59,7 +61,7 @@ class OrdersProvider with ChangeNotifier {
 
   Future<void> fetchAndSetOrders() async {
     final Uri url = Uri.parse(
-        'https://flutter-shop-50c56-default-rtdb.firebaseio.com/orders.json?auth=$authToken');
+        'https://flutter-shop-50c56-default-rtdb.firebaseio.com/orders/$userId.json?auth=$authToken');
     final http.Response response = await http.get(url);
     final Map<String, dynamic> orders = json.decode(response.body) ?? {};
     final Map<String, Order> newOrders = {};

@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 // providers
-import 'package:flutter_shop_app/providers/product_provider.dart';
 import 'package:flutter_shop_app/providers/products_provider.dart';
 // screens
 import 'package:flutter_shop_app/screens/edit_product_screen.dart';
@@ -15,11 +14,16 @@ class UserProductsScreen extends StatelessWidget {
 
   const UserProductsScreen({Key? key}) : super(key: key);
 
+  Future<void> _refreshData(BuildContext context) async {
+    return Provider.of<ProductsProvider>(context, listen: false)
+        .fetchAndSetProducts(true);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final ProductsProvider productsProvider =
-        Provider.of<ProductsProvider>(context);
-    final List<ProductProvider> products = productsProvider.products;
+    // final ProductsProvider productsProvider =
+    //     Provider.of<ProductsProvider>(context);
+    // final List<ProductProvider> products = productsProvider.products;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your prodcuts'),
@@ -33,23 +37,33 @@ class UserProductsScreen extends StatelessWidget {
         ],
       ),
       drawer: const AppDrawer(),
-      body: RefreshIndicator(
-        onRefresh: () => Provider.of<ProductsProvider>(context, listen: false)
-            .fetchAndSetProducts(),
-        child: Padding(
-          padding: const EdgeInsets.only(top: 10),
-          child: ListView.builder(
-            itemCount: products.length,
-            itemBuilder: (_, i) => Column(
-              children: [
-                UserProductBlock(
-                  product: products[i],
-                ),
-                const Divider(),
-              ],
-            ),
-          ),
-        ),
+      body: FutureBuilder(
+        future: _refreshData(context),
+        builder: (_, snapshot) =>
+            snapshot.connectionState == ConnectionState.waiting
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : RefreshIndicator(
+                    onRefresh: () => _refreshData(context),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Consumer<ProductsProvider>(
+                        builder: (_, ProductsProvider productsData, __) =>
+                            ListView.builder(
+                          itemCount: productsData.products.length,
+                          itemBuilder: (_, i) => Column(
+                            children: [
+                              UserProductBlock(
+                                product: productsData.products[i],
+                              ),
+                              const Divider(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
       ),
     );
   }

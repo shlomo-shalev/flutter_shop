@@ -31,9 +31,12 @@ class ProductsProvider with ChangeNotifier {
     return _products.firstWhere((product) => product.id == id);
   }
 
-  Future<void> fetchAndSetProducts() async {
-    final Uri url = Uri.parse(
-        'https://flutter-shop-50c56-default-rtdb.firebaseio.com/products.json?auth=$authToken');
+  Future<void> fetchAndSetProducts([bool onlyOfThisUser = false]) async {
+    final String filter =
+        onlyOfThisUser ? 'orderBy="userId"&equalTo="$userId"' : '';
+    String onlyUrl =
+        'https://flutter-shop-50c56-default-rtdb.firebaseio.com/products.json?auth=$authToken&$filter';
+    final Uri url = Uri.parse(onlyUrl);
     final http.Response response = await http.get(url);
     final Map<String, dynamic> products = json.decode(response.body) ?? {};
     final List<ProductProvider> newProducts = [];
@@ -69,6 +72,7 @@ class ProductsProvider with ChangeNotifier {
         'imageUrl': product.imageUrl,
         'price': product.price,
         'isFavorite': product.isFavorite,
+        'userId': userId,
       }),
     );
     final data = json.decode(response.body);
