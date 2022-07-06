@@ -1,5 +1,6 @@
 // packages
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 // exceptions
@@ -32,17 +33,15 @@ class ProductProvider with ChangeNotifier {
     };
   }
 
-  Future<void> toogleFavoriteStatus() async {
+  Future<void> toogleFavoriteStatus(String? token, String? userId) async {
     isFavorite = !isFavorite;
     notifyListeners();
     try {
       final Uri url = Uri.parse(
-          'https://flutter-shop-50c56-default-rtdb.firebaseio.com/products/$id.json');
-      final response = await http.patch(
+          'https://flutter-shop-50c56-default-rtdb.firebaseio.com/userFavorites/$userId/$id.json?auth=$token');
+      final response = await http.put(
         url,
-        body: json.encode({
-          'isFavorite': isFavorite,
-        }),
+        body: json.encode(isFavorite),
       );
       if (response.statusCode >= 400) {
         throw HttpException(

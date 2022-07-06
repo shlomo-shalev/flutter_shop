@@ -1,5 +1,6 @@
 // packages
 import 'package:flutter/material.dart';
+import 'package:flutter_shop_app/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 // providers
@@ -20,6 +21,8 @@ class ProductBlock extends StatelessWidget {
     final CartProvider cart = Provider.of<CartProvider>(context, listen: false);
     final ScaffoldMessengerState scaffoldMessenger =
         ScaffoldMessenger.of(context);
+    final AuthProvider authData =
+        Provider.of<AuthProvider>(context, listen: false);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
@@ -46,7 +49,10 @@ class ProductBlock extends StatelessWidget {
                   product.isFavorite ? Icons.favorite : Icons.favorite_border),
               onPressed: () async {
                 try {
-                  await product.toogleFavoriteStatus();
+                  await product.toogleFavoriteStatus(
+                    authData.token,
+                    authData.userId,
+                  );
                 } catch (error) {
                   scaffoldMessenger.showSnackBar(
                     SnackBar(
