@@ -1,13 +1,15 @@
 // pachages
 import 'package:flutter/material.dart';
-import 'package:flutter_shop_app/screens/edit_product_screen.dart';
 import 'package:provider/provider.dart';
 
 // screens widgets
+import 'package:flutter_shop_app/screens/auth_screen.dart';
 import 'package:flutter_shop_app/screens/cart_screen.dart';
 import 'package:flutter_shop_app/screens/orders_screen.dart';
 import 'package:flutter_shop_app/screens/product_screen.dart';
+import 'package:flutter_shop_app/providers/auth_provider.dart';
 import 'package:flutter_shop_app/screens/products_screen.dart';
+import 'package:flutter_shop_app/screens/edit_product_screen.dart';
 import 'package:flutter_shop_app/screens/user_products_screen.dart';
 // providers
 import 'package:flutter_shop_app/providers/products_provider.dart';
@@ -26,6 +28,9 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
+          create: (_) => AuthProvider(),
+        ),
+        ChangeNotifierProvider(
           create: (_) => ProductsProvider(),
         ),
         ChangeNotifierProvider(
@@ -35,27 +40,30 @@ class MyApp extends StatelessWidget {
           create: (_) => OrdersProvider(),
         ),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.purple,
+      child: Consumer<AuthProvider>(
+        builder: (context, auth, _) => MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Flutter Demo',
+          theme: ThemeData(
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Colors.purple,
+            ),
+            primarySwatch: Colors.purple,
+            colorScheme: const ColorScheme.light().copyWith(
+              secondary: Colors.deepOrange,
+            ),
+            fontFamily: 'Lato',
           ),
-          primarySwatch: Colors.purple,
-          colorScheme: const ColorScheme.light().copyWith(
-            secondary: Colors.deepOrange,
-          ),
-          fontFamily: 'Lato',
+          home: auth.isAuth ? const ProductsScreen() : const AuthScreen(),
+          routes: {
+            ProductsScreen.routeName: (_) => const ProductsScreen(),
+            ProductScreen.routeName: (_) => const ProductScreen(),
+            CartScreen.routeName: (_) => const CartScreen(),
+            OrdersScreen.routeName: (_) => const OrdersScreen(),
+            UserProductsScreen.routeName: (_) => const UserProductsScreen(),
+            EditProductScreen.routeName: (_) => const EditProductScreen(),
+          },
         ),
-        home: const ProductsScreen(),
-        routes: {
-          ProductScreen.routeName: (_) => const ProductScreen(),
-          CartScreen.routeName: (_) => const CartScreen(),
-          OrdersScreen.routeName: (_) => const OrdersScreen(),
-          UserProductsScreen.routeName: (_) => const UserProductsScreen(),
-          EditProductScreen.routeName: (_) => const EditProductScreen(),
-        },
       ),
     );
   }
