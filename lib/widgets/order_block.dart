@@ -37,39 +37,43 @@ class _OrderBlockState extends State<OrderBlock> {
               },
             ),
           ),
-          if (_expanded)
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-                vertical: 10,
-              ),
-              height: min(widget.order.items.length * 20.0 + 20, 100),
-              child: ListView(
-                children: widget.order.items
-                    .map(
-                      (item) => Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(
-                            item.item.title,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
+          AnimatedContainer(
+            duration: const Duration(
+              milliseconds: 300,
+            ),
+            curve: Curves.easeIn,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 15,
+              vertical: 10,
+            ),
+            height:
+                _expanded ? min(widget.order.items.length * 20.0 + 30, 100) : 0,
+            child: ListView(
+              children: widget.order.items
+                  .map(
+                    (item) => Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          item.item.title,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
-                          Text(
-                            '${item.quantity}x \$${item.price}',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey,
-                            ),
+                        ),
+                        Text(
+                          '${item.quantity}x \$${item.price}',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: Colors.grey,
                           ),
-                        ],
-                      ),
-                    )
-                    .toList(),
-              ),
-            )
+                        ),
+                      ],
+                    ),
+                  )
+                  .toList(),
+            ),
+          )
         ],
       ),
     );

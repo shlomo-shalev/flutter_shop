@@ -1,5 +1,6 @@
 // pachages
 import 'package:flutter/material.dart';
+import 'package:flutter_shop_app/helpers/custom_route.dart';
 import 'package:provider/provider.dart';
 
 // screens widgets
@@ -58,6 +59,10 @@ class MyApp extends StatelessWidget {
               secondary: Colors.deepOrange,
             ),
             fontFamily: 'Lato',
+            pageTransitionsTheme: PageTransitionsTheme(builders: {
+              TargetPlatform.android: CustomPageTransitionBuilder(),
+              TargetPlatform.iOS: CustomPageTransitionBuilder(),
+            }),
           ),
           home: auth.isAuth
               ? const ProductsScreen()
